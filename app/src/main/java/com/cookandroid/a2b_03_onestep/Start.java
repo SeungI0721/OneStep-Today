@@ -1,3 +1,4 @@
+// 걷기 측정 화면을 담당하는 파일입니다.
 package com.cookandroid.a2b_03_onestep;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,8 +12,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.os.Build;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -152,6 +154,15 @@ public class Start extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        running = false;
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
+    }
+
 
     public void  onSensorChanged(SensorEvent event) { //실제 카운트 함수
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
@@ -183,32 +194,40 @@ public class Start extends AppCompatActivity
             }
         }
 
+        @SuppressWarnings("deprecation")
         public void Belling() {
             // 저장된 목표 걸음 수와 현재 세션+이전 걸음 수를 비교해 달성 알림을 띄웁니다.
 
-            if (bell = false) {
+            if (!bell) {
                 //알림
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                String GSW = sharedPreferences.getString("GSW", "");
+                SharedPreferences sharedPreferences = AppPreferences.get(this);
+                String GSW = sharedPreferences.getString("GSW", "1");
 
-                String value = sharedPreferences.getString("goal", "");
+                String value = sharedPreferences.getString("goal", "10000");
                 int STG = Integer.parseInt(value);
 
                 Intent intentStart = getIntent();
                 String StepT = intentStart.getStringExtra("Step");
+                if (StepT == null || StepT.length() == 0) {
+                    StepT = "0";
+                }
                 int STT = Integer.parseInt(StepT);
 
                 if (STG >= STT) {
-                    if (GSW == "1") {
+                    if ("1".equals(GSW)) {
                         int TSE = tStep + STT;
                         if (STG <= TSE) {
                             Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                            vibrator.vibrate(1000); //1초간 진동
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
+                            } else {
+                                vibrator.vibrate(1000);
+                            }
                             Toast.makeText(this, "목표 걸음수를 달성했습니다!", Toast.LENGTH_LONG).show();
                             bell = true;
                         }
                     } else {
-                        Toast.makeText(this, "알림이 꺼져 있씁니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "알림이 꺼져 있습니다.", Toast.LENGTH_LONG).show();
                         bell = true;
                     }
                 } else {
@@ -218,6 +237,7 @@ public class Start extends AppCompatActivity
             }
         }
 
+    @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 }

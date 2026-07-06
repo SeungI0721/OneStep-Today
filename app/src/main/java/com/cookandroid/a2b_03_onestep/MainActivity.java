@@ -1,6 +1,6 @@
+// 앱의 메인 화면을 담당하는 파일입니다.
 package com.cookandroid.a2b_03_onestep;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -12,7 +12,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -29,6 +28,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 // 앱의 메인 화면입니다.
 // 누적 걸음 수, 목표, 시간, 거리, 칼로리, 날씨 정보를 한 화면에 모아 보여줍니다.
@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     String key = "890cr%2FEzAADYYKUnn9SK9JLTjoAuXWGmw7j%2FFIczgY08F7VXDeP1oJSHD38NziFRLMWNhndxBs%2BCLqxlGmUYfQ%3D%3D";
     String data;
 
-    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         fai.setImageResource(R.drawable.sneaker2);
 
         // 설정 화면과 시작 화면에서 저장한 값을 기본 SharedPreferences에서 불러옵니다.
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = AppPreferences.get(this);
         Intent intent = getIntent();
 
         //걸음 수
@@ -362,38 +361,33 @@ public class MainActivity extends AppCompatActivity {
 
         //활동 퍼미션 확인
         // 걸음 수 권한이 거부된 상태라면 런타임 권한을 요청합니다.
-        if(ContextCompat.checkSelfPermission(this,
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED){
             requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 0);
         }
 
-        onStart();
-
-        //날씨 알림
-        String Mell = sharedPreferences.getString("MSW", "");
-        if (Mell == "1") {
-            if (Sky == "맑음") {
-                Toast.makeText(getApplicationContext(), "오늘은 날이 맑아요! 신나게 걸어볼까요?", Toast.LENGTH_SHORT).show();
-            } else if (Pre == "비" || Pre == "진눈개비" || Pre == "소나기" || Pre == "빗방울" || Pre == "빗방울 눈날림") {
-                Toast.makeText(getApplicationContext(), "오늘은 비가 오네요! 우산 챙기기 잊지 마세요!", Toast.LENGTH_SHORT).show();
-            } else if (Pre == "눈" || Pre == "눈날림") {
-                Toast.makeText(getApplicationContext(), "오늘은 눈이 오네요! 눈길은 미끄러우니 조심하세요!", Toast.LENGTH_SHORT).show();
-            }
-        }
+        updateGoalStatus();
     }
 
     //오늘 날짜 확인
     private String getTime() {
         long now = System.currentTimeMillis();
         Date date = new Date(now); //날짜를 담을 변수 생성
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일"); //년-월-일
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREA); //년-월-일
         return dateFormat.format(date);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        updateGoalStatus();
+    }
 
+    private void updateGoalStatus() {
+        if (success == null || fail == null) {
+            return;
+        }
         // 누적 걸음 수가 목표 이상이면 성공 영역을 보여주고, 아니면 실패 영역을 보여줍니다.
         if (R3 >= G || R1 >= G ) {
             Suc = "TT";
@@ -420,10 +414,16 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         // 백그라운드 스레드에서 가져온 날씨 값을 UI 스레드에서 화면에 반영합니다.
                         Temperature = findViewById(R.id.Temperature);
+                        if (Tem == null || Sky == null || Pre == null) {
+                            Temperature.setText("-");
+                            TemCondition = findViewById(R.id.TemCondition);
+                            TemCondition.setText("날씨 정보를 불러오지 못했습니다");
+                            return;
+                        }
                         Temperature.setText(Tem+"º");
 
                         TemCondition = findViewById(R.id.TemCondition);
-                        if (Pre == "0") {
+                        if ("0".equals(Pre)) {
                             TemCondition.setText(Sky);
                         } else {
                             TemCondition.setText(Sky+" 그리고 "+Pre);
@@ -431,26 +431,44 @@ public class MainActivity extends AppCompatActivity {
 
                         // 하늘 상태와 강수 형태에 따라 날씨 이미지를 바꿉니다.
                         ima = findViewById(R.id.imageView);
-                        if (Pre == "0") {
-                            if (Sky == "맑음") {
+                        if ("0".equals(Pre)) {
+                            if ("맑음".equals(Sky)) {
                                 ima.setImageResource(R.drawable.sunny);
-                            } else if (Sky == "구름많음" || Sky == "흐림") {
+                            } else if ("구름많음".equals(Sky) || "흐림".equals(Sky)) {
                                 ima.setImageResource(R.drawable.cloudy);
                             }
-                        } else if ( Pre == "진눈개비" || Pre == "빗방울" || Pre == "빗방울 눈날림") {
+                        } else if ( "진눈개비".equals(Pre) || "빗방울".equals(Pre) || "빗방울 눈날림".equals(Pre)) {
                             ima.setImageResource(R.drawable.rain);
-                        }  else if (Pre == "비" || Pre == "소나기") {
+                        }  else if ("비".equals(Pre) || "소나기".equals(Pre)) {
                             ima.setImageResource(R.drawable.heavyrain);
-                        } else if (Pre == "눈") {
+                        } else if ("눈".equals(Pre)) {
                             ima.setImageResource(R.drawable.heavysnow);
-                        } else if (Pre == "눈날림") {
+                        } else if ("눈날림".equals(Pre)) {
                             ima.setImageResource(R.drawable.snow);
                         }
+                        showWeatherToast();
                     }
                 });
             }
         }).start();
     }
+
+    private void showWeatherToast() {
+        SharedPreferences sharedPreferences = AppPreferences.get(this);
+        String Mell = sharedPreferences.getString("MSW", "0");
+        if (!"1".equals(Mell)) {
+            return;
+        }
+
+        if ("맑음".equals(Sky)) {
+            Toast.makeText(getApplicationContext(), "오늘은 날이 맑아요! 신나게 걸어볼까요?", Toast.LENGTH_SHORT).show();
+        } else if ("비".equals(Pre) || "진눈개비".equals(Pre) || "소나기".equals(Pre) || "빗방울".equals(Pre) || "빗방울 눈날림".equals(Pre)) {
+            Toast.makeText(getApplicationContext(), "오늘은 비가 오네요! 우산 챙기기 잊지 마세요!", Toast.LENGTH_SHORT).show();
+        } else if ("눈".equals(Pre) || "눈날림".equals(Pre)) {
+            Toast.makeText(getApplicationContext(), "오늘은 눈이 오네요! 눈길은 미끄러우니 조심하세요!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     String getXmlData() {
         // 기상청 단기예보 XML API를 호출하고 필요한 fcstValue 순서의 값을 추출합니다.
         StringBuffer buffer = new StringBuffer();
@@ -459,7 +477,7 @@ public class MainActivity extends AppCompatActivity {
         String numOfRows = "100";
         String pageNo = "1";
 
-        SimpleDateFormat real_time = new SimpleDateFormat("yyyMMdd");
+        SimpleDateFormat real_time = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
         long now = System.currentTimeMillis();
         Date time = new Date(now);
         String base_data = real_time.format(time);
@@ -468,7 +486,7 @@ public class MainActivity extends AppCompatActivity {
         String ny = "121";
 
         // 현재 코드는 고정 좌표(nx, ny)와 오전 6시 기준 예보를 사용합니다.
-        String queryUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey="
+        String queryUrl = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey="
                 + serviceKey + "&numOfRows=" + numOfRows + "&pageNo=" + pageNo + "&base_date=" + base_data + "&base_time=" + base_time + "&nx=" + nx + "&ny=" + ny;
 
         try {
@@ -564,13 +582,25 @@ public class MainActivity extends AppCompatActivity {
         return buffer.toString();//StringBuffer 문자열 객체 반환
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveCurrentRecord();
+    }
+
     //저장
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        saveCurrentRecord();
+    }
 
+    private void saveCurrentRecord() {
+        if (steps == null || goal == null || Hh == null || Mm == null || Ss == null || Km == null || Cal == null) {
+            return;
+        }
         // 화면이 종료될 때 현재 표시 중인 누적 기록을 저장합니다.
-        SharedPreferences sharedPreferences = getSharedPreferences("OneStep", 0);
+        SharedPreferences sharedPreferences = AppPreferences.get(this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         String STEP = steps.getText().toString();
@@ -595,6 +625,5 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("CC", CC);
 
         editor.apply();
-
     }
 }

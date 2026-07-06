@@ -26,6 +26,7 @@
 │  │  ├─ Setting.java
 │  │  ├─ Statistics.java
 │  │  ├─ MyService.java
+│  │  ├─ AppPreferences.java
 │  │  └─ Temporary.java
 │  ├─ src/main/res/
 │  └─ build.gradle
@@ -69,25 +70,22 @@ Manifest에 등록되어 있는 기본 서비스입니다.
 
 ## 현재 빌드 환경
 
-- Android Gradle Plugin: `7.0.3`
-- Gradle Wrapper: `7.0.2`
-- `compileSdk`: 31
+- Android Gradle Plugin: `9.2.0`
+- Gradle Wrapper: `9.4.1`
+- `compileSdk`: 36
 - `minSdk`: 24
-- `targetSdk`: 30
-- Java 컴파일 옵션: Java 8
+- `targetSdk`: 28
+- Java 컴파일 옵션: Java 17
 - ViewBinding: 사용
 
 현재 설정 기준으로는 API 28 기기 실행 조건을 이미 만족합니다.  
-이후 작업에서는 API 28 대응 여부를 다시 확인하면서 Gradle, Android Gradle Plugin, JDK 버전을 함께 정리할 예정입니다.
+Android Gradle Plugin과 Gradle Wrapper는 현재 공식 문서 기준 최신 안정 버전에 맞춰 정리했습니다.
 
 ## 주요 의존성
 
 - AndroidX AppCompat
 - AndroidX ConstraintLayout
 - Google Material Components
-- Google Play Services Maps
-- Google Play Services Location
-- Google Places
 - JUnit
 - AndroidX Test
 - Espresso
@@ -98,38 +96,73 @@ Manifest에 선언된 주요 권한은 다음과 같습니다.
 
 - `ACTIVITY_RECOGNITION`
 - `INTERNET`
-- `WRITE_EXTERNAL_STORAGE`
 - `ACCESS_NETWORK_STATE`
-- `ACCESS_FINE_LOCATION`
-- `ACCESS_COARSE_LOCATION`
 - `VIBRATE`
 
 ## 데이터 저장 방식
 
 앱 데이터는 `SharedPreferences`를 사용해 저장합니다.
+저장소 이름은 `AppPreferences`에서 `OneStep`으로 통일해 관리합니다.
 
 - 목표 걸음 수: `goal`
 - 날씨별 목표: `Roal`, `Soal`, `Woal`
 - 알림 스위치: `GSW`, `MSW`
 - 누적 기록: `STEP`, `HH`, `MM`, `SS`, `KK`, `CC`
 
-## 정리 및 개선 예정
+## 남은 확인 사항
 
-업그레이드 전후로 확인이 필요한 부분입니다.
+빌드는 통과했지만 실제 기기에서 한 번 더 확인하면 좋은 부분입니다.
 
-- Gradle, Android Gradle Plugin, JDK 버전 정리
-- API 28 기준 동작 확인
-- 최신 Android 환경에서 권한 처리 방식 점검
-- 백그라운드 만보기 기능이 필요할 경우 포그라운드 서비스 구조 검토
-- 날씨 API의 HTTP 통신 방식 점검
-- Manifest에 포함된 API Key 관리 방식 개선
-- 중복 의존성 정리
-- 문자열 비교 로직 정리
-- `SharedPreferences` 저장소 사용 방식 통일
-- 센서 리스너 등록/해제 흐름 점검
+- 실제 기기에서 날씨 API 응답 확인
+- 실제 기기에서 걸음 수 센서 지원 여부 확인
+- 설정값 저장 후 앱 재실행 시 기록 유지 확인
+- 백그라운드 만보기 기능이 필요할 경우 알림 채널과 포그라운드 서비스 추가
+
+## 변경 기록
+
+### 2026-07-06
+
+- Android Gradle Plugin을 `7.0.3`에서 `9.2.0`으로 올렸습니다.
+- Gradle Wrapper를 `7.0.2`에서 `9.4.1`로 올렸습니다.
+- `targetSdk`를 API 28 기준으로 변경했습니다.
+- `compileSdk`를 36으로 변경했습니다.
+- Build Tools 버전을 `36.0.0`으로 지정했습니다.
+- Android Gradle Plugin 9.x 요구사항에 맞춰 `namespace`를 추가했습니다.
+- Android Gradle Plugin 9.x에서 무시되는 Manifest `package` 속성을 제거했습니다.
+- Java 컴파일 옵션을 Java 17 기준으로 변경했습니다.
+- 버전이 없는 중복 `material` 의존성을 제거했습니다.
+- 테스트 의존성 `junit:junit:4.+`를 `4.13.2`로 고정했습니다.
+- 루트 저장소 설정에서 더 이상 사용하지 않는 `jcenter()`를 제거했습니다.
+- 더 이상 필요하지 않은 `android.enableJetifier=true` 설정을 제거했습니다.
+- Windows 한글 경로에서 빌드 검증이 가능하도록 `android.overridePathCheck=true`를 추가했습니다.
+- 실제 코드에서 사용하지 않는 Google Places, Google Maps, Google Location 의존성을 제거했습니다.
+- 날씨 API 호출 주소를 `http`에서 `https`로 변경했습니다.
+- 문자열 비교에 사용하던 `==`를 `.equals()` 기준으로 정리했습니다.
+- 목표 달성 알림의 대입 조건 오류를 수정했습니다.
+- 걸음 수 센서 리스너를 화면 일시정지 시 해제하도록 정리했습니다.
+- 기록 저장소를 기본 `SharedPreferences` 기준으로 통일했습니다.
+- `AppPreferences`를 추가해 저장소 이름을 한 곳에서 관리하도록 정리했습니다.
+- Manifest에서 사용하지 않는 저장소/위치 권한과 Google Maps API Key를 제거했습니다.
+- 내부 화면과 서비스의 `exported` 값을 `false`로 변경했습니다.
+- 만보기 센서 feature를 `android.hardware.sensor.stepcounter`로 정리했습니다.
+- Gradle 10 호환성을 위해 `app/build.gradle`의 속성 대입 문법을 최신 방식으로 정리했습니다.
+
+### 2026-07-07
+
+- 기존에 2021년 10월, 11월, 12월로 고정되어 있던 통계 화면 달력을 동적 캘린더로 변경했습니다.
+- 현재 연도와 월을 기준으로 달력을 표시하도록 정리했습니다.
+- `지난 달`, `이후 달` 버튼으로 매년 모든 월을 이동할 수 있도록 구현했습니다.
+- 매월 1일의 요일과 마지막 일을 계산해 실제 달력 칸에 맞게 일을 표시하도록 구현했습니다.
+- 오늘 날짜는 달력에서 더 진한 배경으로 표시하도록 정리했습니다.
+- DB 없이 화면에서 연/월/일만 계산해 보여주는 구조로 구현했습니다.
+- 통계 화면에서 숫자 값이 비어 있거나 잘못 전달되어도 기본값을 사용하도록 정리했습니다.
 
 ## 검증 메모
 
-- 기존 debug APK는 `app/build/outputs/apk/debug/app-debug.apk`에 있습니다.
-- 기존 APK 기준 `compileSdkVersion=31`, `minSdkVersion=24`, `targetSdkVersion=30`으로 확인했습니다.
+- debug APK는 `app/build/outputs/apk/debug/app-debug.apk`에 생성됩니다.
+- `./gradlew.bat assembleDebug` 빌드가 성공했습니다.
+- `./gradlew.bat assembleDebug --warning-mode all` 빌드가 성공했습니다.
+- 생성된 APK 기준 `compileSdkVersion=36`, `minSdkVersion=24`, `targetSdkVersion=28`로 확인했습니다.
 - 한글 파일과 XML 리소스는 UTF-8 기준으로 확인했습니다.
+- Windows 한글 경로에서 빌드하기 위해 `android.overridePathCheck=true`를 사용하고 있습니다.
+- 현재 남은 Gradle 출력은 한글 경로 우회 옵션이 실험적이라는 안내입니다.

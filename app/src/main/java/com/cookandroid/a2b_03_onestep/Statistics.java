@@ -1,169 +1,76 @@
+// 통계 화면과 동적 캘린더를 담당하는 파일입니다.
 package com.cookandroid.a2b_03_onestep;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.MotionEvent;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.GridLayout;
 import android.widget.TextView;
 
-// 통계 화면입니다.
-// MainActivity에서 전달받은 오늘 기록을 표시하고 월별 정적 레이아웃을 전환합니다.
+import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
+// 현재 연/월을 기준으로 매달 달력을 다시 그리고, 오늘 기록 요약을 함께 보여줍니다.
 public class Statistics extends AppCompatActivity {
 
     // 현재 기록 표시 영역과 월 이동 버튼입니다.
-    TextView Step, Km, Cal, STime;
+    TextView Step, Km, Cal, STime, Achievement;
     Button back, bt1, bt2;
-    ImageView Sun, Mon, Tue, Wed, Thu, Fri, Sat;
+    GridLayout calendarGrid;
 
-    // 2021년 10월, 11월, 12월 통계 레이아웃입니다.
-    LinearLayout Nov, Oct, Dce, chak;
+    // 화면에 표시할 연도와 월을 Calendar 기준으로 관리합니다.
+    Calendar currentCalendar;
+    Calendar todayCalendar;
 
     int ST;
-    String V = "nov";
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // 화면 진입 시 기본 월을 2021년 11월 레이아웃으로 맞춥니다.
-        Oct.setVisibility(View.INVISIBLE);
-        Nov.setVisibility(View.VISIBLE);
-        Dce.setVisibility(View.INVISIBLE);
-
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
+        // 통계 화면에서 사용할 뷰를 연결합니다.
         Step = findViewById(R.id.step);
         Km = findViewById(R.id.Km);
         Cal = findViewById(R.id.cal);
-
+        Achievement = findViewById(R.id.achievement);
         STime = findViewById(R.id.Stime);
         bt1 = findViewById(R.id.bt1);
         bt2 = findViewById(R.id.bt2);
+        calendarGrid = findViewById(R.id.calendarGrid);
 
-        Oct = findViewById(R.id.Oct);
-        Nov = findViewById(R.id.Nov);
-        Dce = findViewById(R.id.Dce);
+        todayCalendar = Calendar.getInstance(Locale.KOREA);
+        currentCalendar = Calendar.getInstance(Locale.KOREA);
 
-//        chak = findViewById(R.id.chak);
-//        chak.setOnTouchListener(new View.OnTouchListener() {
-//            @SuppressLint("ClickableViewAccessibility")
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                return true;
-//            }
-//        });
+        setRecordSummary();
+        drawCalendar();
 
-        // 왼쪽 버튼은 현재 월 상태에 따라 이전 월 레이아웃을 보여줍니다.
+        // 지난 달 버튼을 누르면 현재 표시 월을 한 달 앞으로 이동합니다.
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (V == "nov") {
-                    STime.setText("2021년 10월");
-                    Oct.setVisibility(View.VISIBLE);
-                    Nov.setVisibility(View.INVISIBLE);
-                    Dce.setVisibility(View.INVISIBLE);
-                    V="oct";
-                } else if (V == "dec") {
-                    STime.setText("2021년 11월");
-                    Oct.setVisibility(View.INVISIBLE);
-                    Nov.setVisibility(View.VISIBLE);
-                    Dce.setVisibility(View.INVISIBLE);
-                    V="nov";
-                }
+                currentCalendar.add(Calendar.MONTH, -1);
+                drawCalendar();
             }
         });
 
-        // 오른쪽 버튼은 현재 월 상태에 따라 다음 월 레이아웃을 보여줍니다.
+        // 이후 달 버튼을 누르면 현재 표시 월을 한 달 뒤로 이동합니다.
         bt2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (V == "nov") {
-                    STime.setText("2021년 12월");
-                    Oct.setVisibility(View.INVISIBLE);
-                    Nov.setVisibility(View.INVISIBLE);
-                    Dce.setVisibility(View.VISIBLE);
-                    V="dec";
-
-                } else if (V == "oct") {
-                    STime.setText("2021년 11월");
-                    Oct.setVisibility(View.INVISIBLE);
-                    Nov.setVisibility(View.VISIBLE);
-                    Dce.setVisibility(View.INVISIBLE);
-                    V="nov";
-                }
+                currentCalendar.add(Calendar.MONTH, 1);
+                drawCalendar();
             }
         });
 
-        // MainActivity에서 전달받은 오늘 기록 값을 화면에 표시합니다.
-        Intent intentSta = getIntent();
-
-        //걸음수
-        String st = intentSta.getStringExtra("Step");
-        if (st == null || st.equals("")) {
-            Step.setText("fail");
-        } else {
-            Step.setText(st);
-            ST = Integer.parseInt(st);
-        }
-
-        //거리
-        String km = intentSta.getStringExtra("Km");
-        if (km == null || km.equals("")) {
-            Km.setText("fail");
-        } else {
-            Km.setText(km);
-        }
-
-        //칼로리
-        String ca = intentSta.getStringExtra("Cal");
-        if (ca == null || ca.equals("")) {
-            Cal.setText("fail");
-        } else {
-            Cal.setText(ca);
-        }
-
-//        Sun = findViewById(R.id.Sun);
-//        Sun.setImageResource(R.drawable.faii);
-//
-//        //String Suc = intentSta.getStringExtra("Suc");
-//        Mon = findViewById(R.id.Mon);
-//        Mon.setImageResource(R.drawable.succ);
-//
-//
-//        Tue = findViewById(R.id.Tue);
-//        Tue.setImageResource(R.drawable.faii);
-//
-//        Wed = findViewById(R.id.Wed);
-//        Wed.setImageResource(R.drawable.faii);
-//
-        // 목표 달성 여부에 따라 통계 달력의 해당 날짜 아이콘을 변경합니다.
-        String Su = intentSta.getStringExtra("Suc");
-        Thu = findViewById(R.id.Thu);
-        if (Su == "TT") {
-            Thu.setImageResource(R.drawable.succ);
-        } else {
-            Thu.setImageResource(R.drawable.faii);
-        }
-//
-//        Fri = findViewById(R.id.Fri);
-//        Fri.setImageResource(R.drawable.faii);
-//
-//        Sat = findViewById(R.id.Sat);
-//        Sat.setImageResource(R.drawable.faii);
-
-        //돌아가기
+        // 돌아가기 버튼을 누르면 메인 화면으로 이동합니다.
         back = (Button) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,4 +82,108 @@ public class Statistics extends AppCompatActivity {
         });
     }
 
+    private void setRecordSummary() {
+        // MainActivity에서 전달받은 오늘 기록 값을 화면에 표시합니다.
+        Intent intentSta = getIntent();
+
+        String st = intentSta.getStringExtra("Step");
+        if (st == null || st.equals("")) {
+            st = "0";
+        }
+        Step.setText(st);
+        ST = parseInt(st, 0);
+
+        String km = intentSta.getStringExtra("Km");
+        if (km == null || km.equals("")) {
+            km = "0.0";
+        }
+        Km.setText(km);
+
+        String ca = intentSta.getStringExtra("Cal");
+        if (ca == null || ca.equals("")) {
+            ca = "0.00";
+        }
+        Cal.setText(ca);
+
+        String savedGoal = AppPreferences.get(this).getString("goal", "10000");
+        int goal = parseInt(savedGoal, 10000);
+
+        DecimalFormat format = new DecimalFormat("#.0");
+        double achievement = goal == 0 ? 0 : (ST * 100.0 / goal);
+        Achievement.setText(format.format(achievement));
+    }
+
+    private void drawCalendar() {
+        // 선택된 연도와 월을 기준으로 6주짜리 달력 칸을 다시 만듭니다.
+        calendarGrid.removeAllViews();
+
+        int year = currentCalendar.get(Calendar.YEAR);
+        int month = currentCalendar.get(Calendar.MONTH);
+        STime.setText(String.format(Locale.KOREA, "%d년 %02d월", year, month + 1));
+
+        Calendar firstDay = Calendar.getInstance(Locale.KOREA);
+        firstDay.set(year, month, 1);
+
+        int firstWeekDay = firstDay.get(Calendar.DAY_OF_WEEK);
+        int lastDay = firstDay.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int startIndex = firstWeekDay - 1;
+
+        for (int i = 0; i < 42; i++) {
+            TextView dayView = makeDayView();
+            int day = i - startIndex + 1;
+
+            if (day >= 1 && day <= lastDay) {
+                dayView.setText(String.valueOf(day));
+                setDayStyle(dayView, year, month, day);
+            } else {
+                dayView.setText("");
+                dayView.setBackgroundColor(Color.TRANSPARENT);
+            }
+
+            calendarGrid.addView(dayView);
+        }
+    }
+
+    private int parseInt(String value, int defaultValue) {
+        // 비어 있거나 숫자가 아닌 값이 들어와도 통계 화면이 종료되지 않도록 기본값을 사용합니다.
+        try {
+            if (value == null || value.length() == 0) {
+                return defaultValue;
+            }
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    private TextView makeDayView() {
+        // 달력 한 칸에 들어갈 날짜 TextView를 만듭니다.
+        TextView dayView = new TextView(this);
+        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+        params.width = 0;
+        params.height = 0;
+        params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+        params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+        params.setMargins(4, 4, 4, 4);
+        dayView.setLayoutParams(params);
+        dayView.setGravity(Gravity.CENTER);
+        dayView.setTextColor(Color.WHITE);
+        dayView.setTextSize(20);
+        dayView.setTypeface(null, Typeface.BOLD);
+        dayView.setBackgroundColor(Color.argb(60, 0, 0, 0));
+        return dayView;
+    }
+
+    private void setDayStyle(TextView dayView, int year, int month, int day) {
+        // 오늘 날짜는 구분하기 쉽도록 배경색을 더 진하게 표시합니다.
+        boolean isToday = year == todayCalendar.get(Calendar.YEAR)
+                && month == todayCalendar.get(Calendar.MONTH)
+                && day == todayCalendar.get(Calendar.DAY_OF_MONTH);
+
+        if (isToday) {
+            dayView.setBackgroundColor(Color.argb(180, 0, 0, 0));
+        } else {
+            dayView.setBackgroundColor(Color.argb(60, 0, 0, 0));
+        }
+    }
 }

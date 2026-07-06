@@ -1,3 +1,4 @@
+// 목표와 알림 설정 화면을 담당하는 파일입니다.
 package com.cookandroid.a2b_03_onestep;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -6,7 +7,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -33,7 +33,7 @@ public class Setting extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
         // 설정값은 기본 SharedPreferences에서 불러오고 다시 저장합니다.
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = AppPreferences.get(this);
 
         //설정값 불러오기
         //그냥 목표
@@ -76,10 +76,11 @@ public class Setting extends AppCompatActivity {
         //알림 설정------------------------------------------------------------------------------------------
         //목표
         String Gell = sharedPreferences.getString("GSW", "1");
+        GSW = Gell;
         Gb = findViewById(R.id.GB);
-        if (Gell == "1") {
+        if ("1".equals(Gell)) {
             Gb.setChecked(true);
-        } else if (Gell == "0") {
+        } else if ("0".equals(Gell)) {
             Gb.setChecked(false);
         } else {
             Toast.makeText(getApplicationContext(),"알림 설정값 불러오기에 실패하였습니다.",Toast.LENGTH_SHORT).show();
@@ -102,9 +103,10 @@ public class Setting extends AppCompatActivity {
         //날씨
         Mb = findViewById(R.id.MB);
         String Mell = sharedPreferences.getString("MSW", "0");
-        if (Mell == "1") {
+        MSW = Mell;
+        if ("1".equals(Mell)) {
             Mb.setChecked(true);
-        } else if (Mell == "0") {
+        } else if ("0".equals(Mell)) {
             Mb.setChecked(false);
         } else {
             Toast.makeText(getApplicationContext(),"날씨 설정값 불러오기에 실패하였습니다.",Toast.LENGTH_SHORT).show();

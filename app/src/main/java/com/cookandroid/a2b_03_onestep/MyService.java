@@ -1,3 +1,4 @@
+// 앱의 기본 서비스를 담당하는 파일입니다.
 package com.cookandroid.a2b_03_onestep;
 
 import static android.content.ContentValues.TAG;
