@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 메인 화면에 표시되는 텍스트, 버튼, 상태 이미지 영역입니다.
     TextView day, steps, goal, Hh, Mm, Ss, Km, Cal, Temperature, TemCondition;
-    Button start, set, sta, re;
+    Button start, set, sta, map, re;
     LinearLayout success, fail;
     ImageView suc, fai, ima;
 
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         start = (Button) findViewById(R.id.Start);
         set = (Button) findViewById(R.id.Set);
         sta = (Button) findViewById(R.id.Sta);
+        map = (Button) findViewById(R.id.Map);
 
         suc = findViewById(R.id.suc);
         suc.setImageResource(R.drawable.good);
@@ -322,6 +323,15 @@ public class MainActivity extends AppCompatActivity {
                 intentSta.putExtra("Suc", Su);
 
                 startActivity(intentSta);
+            }
+        });
+
+        // 지도 버튼은 지도 표시 화면으로 이동합니다.
+        map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentMap = new Intent(getApplicationContext(), MapActivity.class);
+                startActivity(intentMap);
             }
         });
 

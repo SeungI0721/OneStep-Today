@@ -1,15 +1,24 @@
+# GitHub에 올리지 않을 로컬 생성 파일을 정리하는 파일입니다.
 *.iml
-.gradle
+.DS_Store
+
+# Gradle과 Android 빌드 결과물입니다.
+.gradle/
+/build/
+/app/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+
+# 개인 PC와 Android Studio 로컬 설정입니다.
+local.properties
 /local.properties
-/.idea/caches
-/.idea/libraries
+/.idea/caches/
+/.idea/libraries/
+/.idea/modules/
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties

@@ -1,7 +1,1 @@
-package com.cookandroid.a2b_03_onestep;
-
-import android.content.Intent;
-
-public class Temporary {
-
-}
+// 현재 앱에서 사용하지 않는 임시 파일입니다.
