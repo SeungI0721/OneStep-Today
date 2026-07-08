@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = AppPreferences.get(this);
         Intent intent = getIntent();
 
-        //걸음 수
+        // 저장된 누적 걸음 수를 불러와 화면과 계산 기준값에 반영합니다.
         steps = findViewById(R.id.Steps);
         success = findViewById(R.id.success);
         fail = findViewById(R.id.fail);
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        //목표
+        // 저장된 목표 걸음 수가 없으면 기본 목표값을 사용합니다.
         goal = findViewById(R.id.Mgoal);
         String value = sharedPreferences.getString("goal", "");
         if (value == null || value.equals("")) {
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
             G = Integer.parseInt(value);
         }
 
-        //시간
+        // 저장된 누적 시간을 불러와 시, 분, 초 표시값을 초기화합니다.
         Hh = findViewById(R.id.HH);
         String HH = sharedPreferences.getString("HH", "");
         if (HH == null || HH.equals("")) {
@@ -159,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        //초
         // Start 화면에서 넘어온 초 단위 기록을 누적하고 60초 이상이면 분으로 올림 처리합니다.
         String ss = intent.getStringExtra("ss");
         if (ss == null || ss.equals("")) {
@@ -188,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        //분
         // Start 화면에서 넘어온 분 단위 기록을 누적하고 60분 이상이면 시간으로 올림 처리합니다.
         String mm = intent.getStringExtra("mm");
         if (mm == null || mm.equals("")) {
@@ -217,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        //시
         // Start 화면에서 넘어온 시간 기록을 기존 누적 시간에 더합니다.
         String hh = intent.getStringExtra("hh");
         if (hh == null || hh.equals("")) {
@@ -235,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         DecimalFormat DF = new DecimalFormat("#.##");
-        //이동거리
+        // 저장된 누적 이동 거리를 불러오고 세션 기록이 있으면 합산합니다.
         Km = findViewById(R.id.Km);
         String KK = sharedPreferences.getString("KK", "");
         if (KK == null || KK.equals("")) {
@@ -260,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        //소모 칼로리
+        // 저장된 누적 칼로리를 불러오고 세션 기록이 있으면 합산합니다.
         Cal = findViewById(R.id.Calorie);
         String CC = sharedPreferences.getString("CC", "");
         if (CC == null || CC.equals("")) {
@@ -285,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        //시작 버튼--------------------------------------------------------------------------------------------------------------
+        // 시작 버튼은 걷기 측정 화면으로 이동하면서 현재 누적 걸음 수를 전달합니다.
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -297,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        //설정 버튼-------------------------------------------------------------------------------------------------------------
+        // 설정 버튼은 목표와 알림 설정 화면으로 이동합니다.
         set.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -307,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        //통계 버튼-----------------------------------------------------------------------------------------------------------------
+        // 통계 버튼은 현재 화면에 표시된 기록 요약을 통계 화면으로 전달합니다.
         sta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -364,12 +361,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        //오늘 날짜 기능
+        // 메인 화면 상단에 오늘 날짜를 표시합니다.
         day = (TextView) findViewById(R.id.Dey);
         day.setText(getTime());
 
 
-        //활동 퍼미션 확인
         // 걸음 수 권한이 거부된 상태라면 런타임 권한을 요청합니다.
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
                 ContextCompat.checkSelfPermission(this,
@@ -380,11 +376,11 @@ public class MainActivity extends AppCompatActivity {
         updateGoalStatus();
     }
 
-    //오늘 날짜 확인
+    // 메인 화면에 표시할 오늘 날짜 문자열을 만듭니다.
     private String getTime() {
         long now = System.currentTimeMillis();
-        Date date = new Date(now); //날짜를 담을 변수 생성
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREA); //년-월-일
+        Date date = new Date(now);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREA);
         return dateFormat.format(date);
     }
 
@@ -411,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //날씨
+    // 화면이 다시 활성화될 때 최신 날씨 정보를 비동기로 가져옵니다.
     @Override
     protected void onResume() {
         super.onResume();
@@ -439,7 +435,7 @@ public class MainActivity extends AppCompatActivity {
                             TemCondition.setText(Sky+" 그리고 "+Pre);
                         }
 
-                        // 하늘 상태와 강수 형태에 따라 날씨 이미지를 바꿉니다.
+                        // 하늘 상태와 강수 형태에 맞는 날씨 이미지를 선택합니다.
                         ima = findViewById(R.id.imageView);
                         if ("0".equals(Pre)) {
                             if ("맑음".equals(Sky)) {
@@ -464,6 +460,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showWeatherToast() {
+        // 날씨 알림 설정이 켜져 있을 때만 현재 날씨 안내를 표시합니다.
         SharedPreferences sharedPreferences = AppPreferences.get(this);
         String Mell = sharedPreferences.getString("MSW", "0");
         if (!"1".equals(Mell)) {
@@ -480,7 +477,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     String getXmlData() {
-        // 기상청 단기예보 XML API를 호출하고 필요한 fcstValue 순서의 값을 추출합니다.
+        // 기상청 단기예보 XML API를 호출하고 현재 화면에 필요한 예보 값을 추출합니다.
         StringBuffer buffer = new StringBuffer();
 
         String serviceKey = key;
@@ -518,19 +515,19 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case XmlPullParser.START_TAG:
-                        tag = xpp.getName();//태그 이름 얻어오기
+                        tag = xpp.getName();
 
-                        if (tag.equals("item")) ; // 첫번째 검색결과
+                        if (tag.equals("item")) ;
                         else if (tag.equals("fcstValue")) {
                             i++;
                             if (i == 1) {
-                                //기온
+                                // 응답 순서 기준 첫 번째 예보값을 기온으로 사용합니다.
                                 xpp.next();
                                 Tem = xpp.getText();
                                 buffer.append(xpp.getText() + "ºC");
                             }
                             if (i == 6) {
-                                //하늘 상태
+                                // 하늘 상태 코드를 화면에 보여줄 한국어 문구로 변환합니다.
                                 xpp.next();
                                 if (xpp.getText().equals("1")) {
                                     Sky = "맑음";
@@ -544,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                             if (i == 7) {
-                                //강수 형태
+                                // 강수 형태 코드를 화면에 보여줄 한국어 문구로 변환합니다.
                                 xpp.next();
                                 if (xpp.getText().equals("0")) {
                                     buffer.append("없음");
@@ -579,7 +576,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case XmlPullParser.END_TAG:
-                        tag = xpp.getName(); //태그 이름 얻어오기
+                        tag = xpp.getName();
                         if (tag.equals("item")) buffer.append("\n");
                         break;
                 }
@@ -589,7 +586,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             // 날씨 정보를 가져오지 못한 경우 현재 화면 값은 갱신하지 않습니다.
         }
-        return buffer.toString();//StringBuffer 문자열 객체 반환
+        return buffer.toString();
     }
 
     @Override
@@ -598,7 +595,6 @@ public class MainActivity extends AppCompatActivity {
         saveCurrentRecord();
     }
 
-    //저장
     @Override
     protected void onDestroy() {
         super.onDestroy();

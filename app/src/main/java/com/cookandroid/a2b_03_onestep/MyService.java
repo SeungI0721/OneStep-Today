@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-// 현재 Manifest에 등록되어 있는 기본 Service입니다.
-// 핵심 만보기 흐름과 직접 연결되어 있지는 않고, 시작/종료 로그 확인용에 가깝습니다.
+// Manifest에 등록된 기본 Service입니다.
+// 현재는 만보기 측정 흐름과 직접 연결되지 않고 서비스 생명주기 로그만 확인합니다.
 public class MyService extends Service {
     public MyService() {
     }
@@ -26,7 +26,7 @@ public class MyService extends Service {
         if (intent == null) {
             return Service.START_STICKY;
         } else {
-            // 호출 측에서 전달한 명령 문자열을 로그로 확인합니다.
+            // TODO: 실제 서비스 명령을 연결할 때 extra key를 명확한 이름으로 교체해야 합니다.
             String command = intent.getStringExtra("채ㅡㅡㅁㅇ");
 
             Log.d(TAG, "전달" + command);
@@ -43,6 +43,7 @@ public class MyService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        // 바인드 서비스로 사용하지 않으므로 Binder를 제공하지 않습니다.
         return null;
     }
 }

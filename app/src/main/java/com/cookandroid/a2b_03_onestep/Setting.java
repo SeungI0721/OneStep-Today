@@ -32,11 +32,10 @@ public class Setting extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-        // 설정값은 기본 SharedPreferences에서 불러오고 다시 저장합니다.
+        // 설정값은 앱 공통 SharedPreferences에서 불러오고 다시 저장합니다.
         SharedPreferences sharedPreferences = AppPreferences.get(this);
 
-        //설정값 불러오기
-        //그냥 목표
+        // 기본 목표 걸음 수를 불러오고 값이 없으면 기본값을 표시합니다.
         Mgoal = findViewById(R.id.Mgoal);
         String goal = sharedPreferences.getString("goal", "");
         if (goal.length()==0) {
@@ -45,7 +44,7 @@ public class Setting extends AppCompatActivity {
             Mgoal.setText(goal);
         }
 
-        //비 오는 날
+        // 비 오는 날 목표 걸음 수를 불러옵니다.
         Rgoal = findViewById(R.id.Rgoal);
         String Roal = sharedPreferences.getString("Roal", "");
         if (Roal.length()==0) {
@@ -54,7 +53,7 @@ public class Setting extends AppCompatActivity {
             Rgoal.setText(Roal);
         }
 
-        //눈 오는날
+        // 눈 오는 날 목표 걸음 수를 불러옵니다.
         Sgoal = findViewById(R.id.Sgoal);
         String Soal = sharedPreferences.getString("Soal", "");
         if (Soal.length()==0) {
@@ -63,7 +62,7 @@ public class Setting extends AppCompatActivity {
             Sgoal.setText(Soal);
         }
 
-        //기상 악화
+        // 기상 악화 목표 걸음 수를 불러옵니다.
         Wgoal = findViewById(R.id.Wgoal);
         String Woal = sharedPreferences.getString("Woal", "");
         if (Woal.length()==0) {
@@ -73,8 +72,7 @@ public class Setting extends AppCompatActivity {
         }
 
 
-        //알림 설정------------------------------------------------------------------------------------------
-        //목표
+        // 목표 달성 알림 스위치의 저장값을 화면 상태로 반영합니다.
         String Gell = sharedPreferences.getString("GSW", "1");
         GSW = Gell;
         Gb = findViewById(R.id.GB);
@@ -100,7 +98,7 @@ public class Setting extends AppCompatActivity {
             }
         });
 
-        //날씨
+        // 날씨 알림 스위치의 저장값을 화면 상태로 반영합니다.
         Mb = findViewById(R.id.MB);
         String Mell = sharedPreferences.getString("MSW", "0");
         MSW = Mell;
@@ -125,7 +123,7 @@ public class Setting extends AppCompatActivity {
         });
 
 
-        //저장하기----------------------------------------------------------------------------------------------------
+        // 저장 버튼은 입력값을 검증한 뒤 목표와 알림 설정을 저장합니다.
         save = findViewById(R.id.save);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,7 +159,7 @@ public class Setting extends AppCompatActivity {
             }
         });
 
-        //돌아가기----------------------------------------------------------------------------------------------------------
+        // 돌아가기 버튼은 메인 화면으로 이동합니다.
         back = (Button) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override

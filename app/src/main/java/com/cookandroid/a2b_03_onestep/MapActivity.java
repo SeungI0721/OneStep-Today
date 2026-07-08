@@ -12,7 +12,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-// Google Map을 화면에 표시하고 기본 위치를 보여줍니다.
+// Google Map을 화면에 표시하고 기본 위치 마커를 보여줍니다.
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     GoogleMap googleMap;
@@ -22,7 +22,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        // 지도 Fragment가 준비되면 onMapReady에서 지도 설정을 진행합니다.
+        // 지도 Fragment가 준비되면 onMapReady에서 초기 지도 상태를 설정합니다.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -32,7 +32,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap map) {
-        // 우선 지도 표시 복구가 목적이라 기본 위치를 서울로 잡아 화면에 표시합니다.
+        // TODO: 위치 권한과 경로 기록 기능을 연결하면 기본 위치 대신 사용자 위치를 표시해야 합니다.
         googleMap = map;
         LatLng seoul = new LatLng(37.5665, 126.9780);
         googleMap.addMarker(new MarkerOptions().position(seoul).title("기본 위치"));

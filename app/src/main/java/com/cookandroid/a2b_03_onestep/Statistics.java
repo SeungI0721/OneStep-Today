@@ -17,7 +17,7 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-// 현재 연/월을 기준으로 매달 달력을 다시 그리고, 오늘 기록 요약을 함께 보여줍니다.
+// 현재 연/월을 기준으로 달력을 다시 그리고 오늘 기록 요약을 함께 보여줍니다.
 public class Statistics extends AppCompatActivity {
 
     // 현재 기록 표시 영역과 월 이동 버튼입니다.
@@ -36,7 +36,7 @@ public class Statistics extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
-        // 통계 화면에서 사용할 뷰를 연결합니다.
+        // 통계 화면에서 사용할 기록 표시 영역과 월 이동 버튼을 연결합니다.
         Step = findViewById(R.id.step);
         Km = findViewById(R.id.Km);
         Cal = findViewById(R.id.cal);
@@ -52,7 +52,7 @@ public class Statistics extends AppCompatActivity {
         setRecordSummary();
         drawCalendar();
 
-        // 지난 달 버튼을 누르면 현재 표시 월을 한 달 앞으로 이동합니다.
+        // 지난 달 버튼은 현재 표시 월을 한 달 이전으로 이동합니다.
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,7 +61,7 @@ public class Statistics extends AppCompatActivity {
             }
         });
 
-        // 이후 달 버튼을 누르면 현재 표시 월을 한 달 뒤로 이동합니다.
+        // 이후 달 버튼은 현재 표시 월을 한 달 다음으로 이동합니다.
         bt2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,7 +70,7 @@ public class Statistics extends AppCompatActivity {
             }
         });
 
-        // 돌아가기 버튼을 누르면 메인 화면으로 이동합니다.
+        // 돌아가기 버튼은 메인 화면으로 이동합니다.
         back = (Button) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +83,7 @@ public class Statistics extends AppCompatActivity {
     }
 
     private void setRecordSummary() {
-        // MainActivity에서 전달받은 오늘 기록 값을 화면에 표시합니다.
+        // MainActivity에서 전달받은 오늘 기록 값과 목표 달성률을 화면에 표시합니다.
         Intent intentSta = getIntent();
 
         String st = intentSta.getStringExtra("Step");
@@ -114,7 +114,7 @@ public class Statistics extends AppCompatActivity {
     }
 
     private void drawCalendar() {
-        // 선택된 연도와 월을 기준으로 6주짜리 달력 칸을 다시 만듭니다.
+        // 선택된 연도와 월을 기준으로 6주짜리 달력 칸을 다시 구성합니다.
         calendarGrid.removeAllViews();
 
         int year = currentCalendar.get(Calendar.YEAR);

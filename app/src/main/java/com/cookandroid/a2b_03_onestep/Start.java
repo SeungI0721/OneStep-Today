@@ -31,7 +31,7 @@ import java.util.Date;
 public class Start extends AppCompatActivity
         implements SensorEventListener {
 
-    // 측정 화면의 표시 요소와 센서 관리 객체입니다.
+    // 측정 화면에서 사용하는 표시 요소와 센서 관리 객체입니다.
     Button BT;
     TextView today, Steps, cal, Km;
     Chronometer Time;
@@ -40,10 +40,10 @@ public class Start extends AppCompatActivity
     boolean running = false;
     boolean bell = false;
 
-    //원래 걸음
+    // TYPE_STEP_COUNTER는 부팅 이후 누적값을 주므로, 세션 시작 기준값을 따로 저장합니다.
     int mStep = 0;
 
-    //현재 걸음
+    // 현재 측정 세션에서 계산한 걸음 수입니다.
     int tStep = 0;
 
     @Override
@@ -51,17 +51,15 @@ public class Start extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        //날짜
+        // 측정 화면에 오늘 날짜를 표시합니다.
         today = (TextView) findViewById(R.id.Dey);
         today.setText(getTime());
 
-        //시간 측정
+        // Chronometer로 현재 세션의 걷기 시간을 측정합니다.
         Time = findViewById(R.id.Time);
 
-        //거리
         Km = findViewById(R.id.Km);
 
-        //칼로리
         cal = findViewById(R.id.cal);
 
 
@@ -97,29 +95,28 @@ public class Start extends AppCompatActivity
             }
         });
 
-        //만보기
+        // 걸음 수 센서 사용을 위해 SensorManager를 준비합니다.
         Steps = (TextView) findViewById(R.id.Steps);
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE); //센서 매니저 생성
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-        //화면 유지
+        // 측정 중 화면이 꺼지면 사용자가 시간을 확인하기 어려워 화면을 유지합니다.
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     }
 
 
-        //날짜
+        // 화면에 표시할 오늘 날짜 문자열을 만듭니다.
         private String getTime() {
             long now = System.currentTimeMillis();
-            Date date = new Date(now); //날짜를 담을 변수 생성
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일"); //년-월-일
+            Date date = new Date(now);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");
             return dateFormat.format(date);
         }
 
-        //타이머
+        // Chronometer 기본 표시 형식을 시:분:초 형태로 맞춰 측정 시간을 보여줍니다.
         protected void onStart() {
             super.onStart();
             Time = findViewById(R.id.Time);
-            // Chronometer의 기본 표시를 시:분:초 형태로 직접 구성합니다.
             Time.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
                 @Override
                 public void onChronometerTick(Chronometer chronometer) {
@@ -137,11 +134,7 @@ public class Start extends AppCompatActivity
             Time.start();
         }
 
-        //지도
-
-
-
-    //걸음 수
+    // 화면이 다시 보이면 걸음 수 센서 리스너를 등록합니다.
     protected void onResume() {
         super.onResume();
         running = true;
@@ -164,7 +157,7 @@ public class Start extends AppCompatActivity
     }
 
 
-    public void  onSensorChanged(SensorEvent event) { //실제 카운트 함수
+    public void  onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             if (running) {
                 // 센서 값은 부팅 이후 누적 걸음 수이므로 첫 값을 기준점으로 저장합니다.
@@ -178,12 +171,10 @@ public class Start extends AppCompatActivity
 
                 DecimalFormat kk = new DecimalFormat("#.##");
 
-                //거리
                 double a = S * 0.0006;
                 String km = kk.format(a);
                 Km.setText(km);
 
-                //칼로리
                 double b = S * 0.02;
                 String ca = kk.format(b);
                 cal.setText(ca);
@@ -196,10 +187,9 @@ public class Start extends AppCompatActivity
 
         @SuppressWarnings("deprecation")
         public void Belling() {
-            // 저장된 목표 걸음 수와 현재 세션+이전 걸음 수를 비교해 달성 알림을 띄웁니다.
+            // 저장된 목표 걸음 수와 현재 세션+이전 걸음 수를 비교해 달성 알림을 한 번만 띄웁니다.
 
             if (!bell) {
-                //알림
                 SharedPreferences sharedPreferences = AppPreferences.get(this);
                 String GSW = sharedPreferences.getString("GSW", "1");
 
