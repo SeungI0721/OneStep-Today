@@ -1,6 +1,8 @@
 # GitHub에 올리지 않을 로컬 생성 파일을 정리하는 파일입니다.
 *.iml
 .DS_Store
+Thumbs.db
+desktop.ini
 
 # Gradle과 Android 빌드 결과물입니다.
 .gradle/
@@ -11,10 +13,25 @@
 .cxx/
 *.apk
 *.aab
+*.class
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+
+# 압축 파일과 배포 결과물입니다.
+*.zip
+*.rar
+*.7z
+out/
+dist/
+target/
 
 # 개인 PC와 Android Studio 로컬 설정입니다.
 local.properties
 /local.properties
+/.idea/
 /.idea/caches/
 /.idea/libraries/
 /.idea/modules/
@@ -22,3 +39,15 @@ local.properties
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+.vscode/
+
+# 공개 저장소에 올리지 않을 인증 파일입니다.
+.env
+.env.local
+.env.development
+.env.production
+*.key
+*.pem
+*.p12
+serviceAccountKey.json
+google-services.json
