@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
     // 기상청 XML 응답에서 추출한 기온, 하늘 상태, 강수 형태입니다.
     String Tem, Sky, Pre;
-    String key = "890cr%2FEzAADYYKUnn9SK9JLTjoAuXWGmw7j%2FFIczgY08F7VXDeP1oJSHD38NziFRLMWNhndxBs%2BCLqxlGmUYfQ%3D%3D";
     String data;
 
     @Override
@@ -480,7 +479,10 @@ public class MainActivity extends AppCompatActivity {
         // 기상청 단기예보 XML API를 호출하고 현재 화면에 필요한 예보 값을 추출합니다.
         StringBuffer buffer = new StringBuffer();
 
-        String serviceKey = key;
+        String serviceKey = BuildConfig.WEATHER_API_KEY;
+        if (serviceKey == null || serviceKey.trim().isEmpty()) {
+            return buffer.toString();
+        }
         String numOfRows = "100";
         String pageNo = "1";
 

@@ -14,11 +14,23 @@ desktop.ini
 *.apk
 *.aab
 *.class
+*.dex
 *.log
 *.tmp
 *.temp
 *.bak
 *.old
+
+# Python, Node, 임베디드 빌드 중 생기는 파일입니다.
+__pycache__/
+*.pyc
+node_modules/
+*.o
+*.elf
+*.hex
+*.bin
+*.map
+*.eep
 
 # 압축 파일과 배포 결과물입니다.
 *.zip
@@ -49,5 +61,7 @@ local.properties
 *.key
 *.pem
 *.p12
+*.jks
+*.keystore
 serviceAccountKey.json
 google-services.json

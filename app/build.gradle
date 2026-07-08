@@ -11,6 +11,9 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+def weatherApiKey = localProperties.getProperty('WEATHER_API_KEY', '')
+def escapedWeatherApiKey = weatherApiKey.replace('\\', '\\\\').replace('"', '\\"')
+
 android {
     namespace = 'com.cookandroid.a2b_03_onestep'
     compileSdk = 36
@@ -25,6 +28,7 @@ android {
         manifestPlaceholders = [
                 MAPS_API_KEY: localProperties.getProperty('MAPS_API_KEY', '')
         ]
+        buildConfigField "String", "WEATHER_API_KEY", "\"${escapedWeatherApiKey}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,6 +45,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
