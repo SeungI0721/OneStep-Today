@@ -56,7 +56,7 @@ app/build/outputs/apk/debug/app-debug.apk
 Windows PowerShell에서 JDK 경로를 명시해 실행해야 하는 경우에는 다음 방식으로 실행합니다.
 
 ```powershell
-$env:JAVA_HOME='C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot'
+$env:JAVA_HOME='JDK_설치_경로'
 .\gradlew.bat assembleDebug --warning-mode all
 ```
 
